@@ -526,8 +526,8 @@
 				TargetAttributes = {
 					D5F495D31DB8DA690039D73E = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = HJ7KFM572S;
-						ProvisioningStyle = Manual;
+						DevelopmentTeam = 776YQQ7A2B;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 0;
@@ -964,7 +964,7 @@
 				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = HJ7KFM572S;
+				DEVELOPMENT_TEAM = 776YQQ7A2B;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -972,10 +972,10 @@
 				INFOPLIST_FILE = SCIIL/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sciil.eLPA;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adient.mobility.sciil.eLPA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "96c3654f-35a7-45f5-9e41-af0e0be6a702";
-				PROVISIONING_PROFILE_SPECIFIER = "SCIIL eLPA";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -988,7 +988,7 @@
 				CODE_SIGN_ENTITLEMENTS = SCIIL/SCIIL.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = HJ7KFM572S;
+				DEVELOPMENT_TEAM = 776YQQ7A2B;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -996,10 +996,10 @@
 				INFOPLIST_FILE = SCIIL/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.sciil.eLPA;
+				PRODUCT_BUNDLE_IDENTIFIER = com.adient.mobility.sciil.eLPA;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "96c3654f-35a7-45f5-9e41-af0e0be6a702";
-				PROVISIONING_PROFILE_SPECIFIER = "SCIIL eLPA";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
