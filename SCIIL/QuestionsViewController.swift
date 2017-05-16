@@ -2,7 +2,7 @@ import UIKit
 import SwiftyJSON
 import SQLite
 
-class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate {
+class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITextViewDelegate, UIScrollViewDelegate {
     var photoIndex :Int!
     var questPhotoName :String!
     var questImg :String!
@@ -16,7 +16,7 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
     var answers = [String: Answer]()
     var isModalAnswerPhoto: Bool!
     var imageTaken:Bool!
-    var textExpanded:Bool!
+    var textExpanded:Bool = false
     
     @IBOutlet var questionPhoto: UIImageView!
     @IBOutlet var textView: UITextView!
@@ -25,6 +25,7 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
     @IBOutlet var chapterText: UILabel!
     @IBOutlet var blankQuestImg: UIImageView!
     @IBOutlet var blankAnswerImg: UIImageView!
+    @IBOutlet var scrollView: UIScrollView!
     
     let fixedButton = UIButton()
     let notOkButton = UIButton()
@@ -39,7 +40,7 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
     let NOTOKBUTTON_TAG = 4
     let OKBUTTON_TAG = 5
     let FIXEDBUTTON_TAG = 6
-    
+
     var selectedImage:UIImage!
     let imagePicker = UIImagePickerController()
     
@@ -72,6 +73,7 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.scrollView.delegate = self
         self.setQuestionText(text: questPhotoName)
         self.setChapterText(text: questChap)
         self.setAnswerText(text: (answers[questID]?.Info1)!)
@@ -85,6 +87,8 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         textView.delegate = self
         textView.layer.borderColor = UIColor.white.cgColor
         textView.layer.borderWidth = 1.0
+        textView.tintColor = UIColor.white
+        
         self.placeholder = Translator.getLangValue(key: "question_edit_text_hint")
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
@@ -105,12 +109,17 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
 //    }
     
     func addArrowButton() {
-        arrowButton.frame = CGRect(x: self.arrowButtonX(), y: self.arrowButtonY(), width: 46, height: 30)
-        arrowButton.setImage(UIImage(named: "arrow_down"), for: .normal)
-        arrowButton.tintColor = UIColor.white
-        arrowButton.addTarget(self, action: #selector(expandQuestionText), for: UIControlEvents.touchUpInside)
-        self.view.addSubview(arrowButton)
+        if(questionText.isTruncated()){
+            arrowButton.frame = CGRect(x: self.arrowButtonX(), y: self.arrowButtonY(), width: 46, height: 30)
+            arrowButton.setImage(UIImage(named: "arrow_down"), for: .normal)
+            arrowButton.tintColor = UIColor.white
+            arrowButton.addTarget(self, action: #selector(expandQuestionText), for: UIControlEvents.touchUpInside)
+            let yPosition = arrowButton.frame.height
+            self.scrollView.contentSize = CGSize(width: scrollView.frame.width, height: scrollView.frame.height + yPosition)
+            self.scrollView.addSubview(arrowButton)
+        }
     }
+    
     func arrowButtonX() -> Int {
         let x:Int!
         switch (Config.SCREEN_HEIGHT) {
@@ -127,36 +136,40 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         }
         return x
     }
+    
     func arrowButtonY() -> Int {
         let y:Int!
         switch (Config.SCREEN_HEIGHT) {
         case 480: // 4s
-            y = 132
+            y = 60
         case 568: // 5
-            y = 134
+            y = 60
         case 667: // 6
-            y = 125
+            y = 55
         case 736: // 6 plus
-            y = 135
+            y = 55
         default: // 6
-            y = 125
+            y = 55
         }
         return y
     }
+    
     func expandQuestionText() {
         if(self.textExpanded == true) {
             questionText.numberOfLines = 2
             self.textExpanded = false
             questionText.lineBreakMode = .byTruncatingTail
             textClose()
+                    self.scrollView.setNeedsDisplay()
             questionText.frame = CGRect(x: questionText.frame.origin.x, y: questionText.frame.origin.y, width: questionText.frame.width, height: 27)
             arrowButton.setImage(UIImage(named: "arrow_down"), for: .normal)
         }else{
-            questionText.numberOfLines = 5
+            questionText.numberOfLines = 0
             questionText.sizeToFit()
             self.textExpanded = true
             arrowButton.setImage(UIImage(named: "arrow_up"), for: .normal)
             textExpand()
+                    self.scrollView.setNeedsDisplay()
         }
     }
     
@@ -180,6 +193,10 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         
         arrowButton.frame = CGRect(x: arrowButton.frame.origin.x, y: arrowButton.frame.origin.y  + size, width: arrowButton.frame.width, height: arrowButton.frame.height)
         
+        var contentInset:UIEdgeInsets = self.scrollView.contentInset
+        contentInset.bottom = size
+        self.scrollView.contentInset = contentInset
+        
     }
     
     func textClose() {
@@ -201,24 +218,43 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         okButton.frame = CGRect(x: okButton.frame.origin.x, y: okButton.frame.origin.y  - size, width: okButton.frame.width, height: okButton.frame.height)
         
         arrowButton.frame = CGRect(x: arrowButton.frame.origin.x, y: arrowButton.frame.origin.y  - size, width: arrowButton.frame.width, height: arrowButton.frame.height)
+        
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        self.scrollView.contentInset = contentInset
     }
     
     func keyboardWillShow(notification: NSNotification) {
         
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0{
-                self.view.frame.origin.y -= keyboardSize.height
-            }
+            var contentInset:UIEdgeInsets = self.scrollView.contentInset
+            contentInset.bottom = keyboardSize.size.height
+            self.scrollView.contentInset = contentInset
+            
+            let scrollPoint : CGPoint = CGPoint(x: 0, y: keyboardSize.size.height)
+            self.scrollView.setContentOffset(scrollPoint, animated: true)
+            
+//            if self.view.frame.origin.y == 0{
+//                self.view.frame.origin.y -= keyboardSize.height
+//            }
         }
         
     }
     
     func keyboardWillHide(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y != 0{
-                self.view.frame.origin.y += keyboardSize.height
-            }
-        }
+//        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+//            if self.view.frame.origin.y != 0{
+//                self.view.frame.origin.y += keyboardSize.height
+//            }
+//        }
+        
+        let contentInset:UIEdgeInsets = UIEdgeInsets.zero
+        self.scrollView.contentInset = contentInset
+    }
+    
+    // MARK: UITextViewDelegate
+    
+    func textViewDidEndEditing(textView: UITextView) {
+        self.scrollView.setContentOffset(CGPoint.zero, animated: true)
     }
     
     func makePhotoOpen() {
@@ -298,11 +334,13 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
                     if(self.questImg != ""){
                         WS.AUDIT_SERVICE.getImageBase64(imageID: self.questImg) { (imageValue) in
                             questionImageString = String(describing: imageValue["Data64"]) as String?
-                            self.questionPhoto.image = self.convertToImage(base64String: questionImageString)
-                            self.imageCache.setObject(self.questionPhoto.image!, forKey: self.questImg as NSString)
-                            self.blankQuestImg.image = nil
-                        
-                            ImageHelper.saveImage(image: self.questionPhoto.image!, fileName: self.questImg)
+                            if(questionImageString != "null") {
+                                self.questionPhoto.image = self.convertToImage(base64String: questionImageString)
+                                self.imageCache.setObject(self.questionPhoto.image!, forKey: self.questImg as NSString)
+                                self.blankQuestImg.image = nil
+                                
+                                ImageHelper.saveImage(image: self.questionPhoto.image!, fileName: self.questImg)
+                            }
                         }
                     }
                 //}
@@ -368,10 +406,10 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if (text == "\n") {
-            textView.resignFirstResponder()
-            return false
-        }
+//        if (text == "\n") {
+//            textView.resignFirstResponder()
+//            return false
+//        }
         return true
     }
     
@@ -419,9 +457,13 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         okButton.setTitle(Translator.getLangValue(key: "ok"), for: .normal)
         okButton.sizeToFit()
         okButton.frame = CGRect(x: -20, y: setYforButtons(), width: 150, height: setHeightforButtons())
+        if(self.textExpanded == true){
+            let size = questionText.frame.height - 37
+            okButton.frame = CGRect(x: okButton.frame.origin.x, y: okButton.frame.origin.y  + size, width: okButton.frame.width, height: okButton.frame.height)
+        }
         okButton.tag = OKBUTTON_TAG
         okButton.addTarget(self, action: #selector(okButtonPressed(_:)), for: .touchUpInside)
-        self.view.addSubview(okButton)
+        self.scrollView.addSubview(okButton)
     }
     
     func buttonNOK() {
@@ -429,9 +471,13 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         notOkButton.setTitle(Translator.getLangValue(key: "nok"), for: .normal)
         notOkButton.sizeToFit()
         notOkButton.frame = CGRect(x: 70, y: setYforButtons(), width: 150, height: setHeightforButtons())
+        if(self.textExpanded == true) {
+            let size = questionText.frame.height - 37
+            notOkButton.frame = CGRect(x: notOkButton.frame.origin.x, y: notOkButton.frame.origin.y  + size, width: notOkButton.frame.width, height: notOkButton.frame.height)
+        }
         notOkButton.tag = NOTOKBUTTON_TAG
         notOkButton.addTarget(self, action: #selector(notOkButtonPressed(_:)), for: .touchUpInside)
-        self.view.addSubview(notOkButton)
+        self.scrollView.addSubview(notOkButton)
     }
     
     func buttonFixed() {
@@ -439,9 +485,13 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         fixedButton.setTitle(Translator.getLangValue(key: "fixed"), for: .normal)
         fixedButton.sizeToFit()
         fixedButton.frame = CGRect(x: 90, y: setYforButtons(), width: 150, height: setHeightforButtons())
+        if(self.textExpanded == true) {
+            let size = questionText.frame.height - 37
+            fixedButton.frame = CGRect(x: fixedButton.frame.origin.x, y: fixedButton.frame.origin.y  + size, width: fixedButton.frame.width, height: fixedButton.frame.height)
+        }
         fixedButton.tag = FIXEDBUTTON_TAG
         fixedButton.addTarget(self, action: #selector(buttonFixedPressed(_:)), for: .touchUpInside)
-        self.view.addSubview(fixedButton)
+        self.scrollView.addSubview(fixedButton)
     }
     
     func okButtonPressed(_ sender: AnyObject?) {
@@ -485,6 +535,10 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
             buttonNokPressed = true
             okButton.removeFromSuperview()
             notOkButton.frame = CGRect(x: -20, y: setYforButtons(), width: 150, height: setHeightforButtons())
+            if(self.textExpanded == true) {
+                let size = questionText.frame.height - 37
+                notOkButton.frame = CGRect(x: notOkButton.frame.origin.x, y: notOkButton.frame.origin.y  + size, width: notOkButton.frame.width, height: notOkButton.frame.height)
+            }
             notOkButton.setTitleColor(Colors.RED, for: .normal)
             self.buttonFixed()
             fixedButton.setTitleColor(UIColor.white, for: .normal)
@@ -570,15 +624,15 @@ class QuestionsViewController: UIViewController, UIImagePickerControllerDelegate
         let y:Int!
         switch (Config.SCREEN_HEIGHT) {
         case 480: // 4s
-            y = 295
+            y = 230
         case 568: // 5
-            y = 345
+            y = 285
         case 667: // 6
-            y = 370
+            y = 285
         case 736: // 6 plus
-            y = 370
+            y = 320
         default: // 6
-            y = 370
+            y = 285
         }
         return y
     }

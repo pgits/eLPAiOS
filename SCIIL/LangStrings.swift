@@ -65,6 +65,7 @@ struct DefaultLang {
     "server_error":"Server error!",
     "filter_saved":"Filter saved!",
     "question_edit_text_hint":"Enter Text here",
-    "select_module":"Select module"
+    "select_module":"Select module",
+    "photo_is_not_available":"Photo is not available"
     ]
 }

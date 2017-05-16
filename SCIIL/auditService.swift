@@ -255,6 +255,8 @@ class auditService {
         
         var IDLPAAudit:String!
         var arrayString = [String]()
+        var startedDate:String!
+        
         NotificationHelper.uploadAuditPhoto()
         for answer in try! DB_CONNECTION.prepare(NotSavedAnswers_DB.TABLE) {
             let fileName = answer[NotSavedAnswers_DB.IDDoc]
@@ -276,19 +278,23 @@ class auditService {
         DispatchQueue.main.asyncAfter(deadline: .now() + 12) {
             for answer in try! DB_CONNECTION.prepare(NotSavedAnswers_DB.TABLE) {
                 if(answer[NotSavedAnswers_DB.Answered] != "") {
-                    var info1_string = answer[NotSavedAnswers_DB.Info1]
-                    info1_string = info1_string.replaceBadCharacters()
+                    var info1_string = answer[NotSavedAnswers_DB.Info1].replacingOccurrences(of:"\n", with: "\\n")
                     let str4 = "{\"Chapter\": {\"IDChapter\": \"\(answer[NotSavedAnswers_DB.IDChapter])\"}, \"Questions\" : [{\"Answer\": {\"Answered\": \"\(answer[NotSavedAnswers_DB.Answered])\", \"IDAnsweredBy\": \"\(answer[NotSavedAnswers_DB.IDAnsweredBy])\", \"IDDoc\": \"\(answer[NotSavedAnswers_DB.IDDoc])\", \"IDLPAAudit\": \"\(answer[NotSavedAnswers_DB.IDLPAAudit])\", \"ImmediatelyCorrected\": \(answer[NotSavedAnswers_DB.ImmediatelyCorrected]), \"Info1\": \"\(info1_string)\", \"NotOk\": \(answer[NotSavedAnswers_DB.NotOk]), \"Ok\": \(answer[NotSavedAnswers_DB.Ok])}, \"Question\": {\"IDQuestion\": \"\(answer[NotSavedAnswers_DB.IDQuestion])\"}}]}"
                     arrayString.append(str4)
                 }
                 IDLPAAudit = answer[NotSavedAnswers_DB.IDLPAAudit]
+                startedDate = answer[NotSavedAnswers_DB.Answered]
             }
             let last_str = "], \"IDLPAAudit\": \"\(IDLPAAudit!)\"}, \"User\": {\"IDLge\": \(IDLge!), \"IDUser\": \"\(IDUser!)\"}}"
             let seperator = ","
             let mergedArray = arrayString.joined(separator: seperator)
             let str3 = str2+mergedArray+last_str
             
+            let saveToDB = Audit_DB.TABLE.filter(Audit_DB.IDLPAAudit == IDLPAAudit)
+            _ = try! DB_CONNECTION.run(saveToDB.update(Audit_DB.Started <- startedDate))
+            
             generetedJSON = self.convertToDictionary(text: str3)
+            
             Alamofire.request("\(Config.DEFAULTS.string(forKey: "WS_URL")!)/LPAWebService/Web/SaveLPAAudit", method: .post, parameters: generetedJSON, encoding: JSONEncoding.default).responseJSON { response in
                 guard let json = response.result.value as? [String: Any] else {
                     print("didn't get object as JSON from API")
@@ -297,7 +303,7 @@ class auditService {
                 }
                 
                 var jsonObj = JSON(json)
-                print(jsonObj)
+
                 if(jsonObj["Message"].string! == "Successful"){
                     callback(true, IDLPAAudit)
                 }else{
@@ -367,8 +373,7 @@ class auditService {
                     for (questID, answer) in answersArray {
                         if let question = try! DB_CONNECTION.pluck(Question_DB.TABLE.filter(Question_DB.IDQuestion == questID)){
                             if(answer.Answered! != "") {
-                                var info1_string = answer.Info1!
-                                info1_string = info1_string.replaceBadCharacters()
+                                let info1_string = answer.Info1!.replacingOccurrences(of:"\n", with: "\\n")
                                 let str4 = "{\"Chapter\": {\"IDChapter\": \"\(question[Question_DB.IDChapter])\"}, \"Questions\" : [{\"Answer\": {\"Answered\": \"\(answer.Answered!)\", \"IDAnsweredBy\": \"\(answer.IDAnsweredBy!)\", \"IDDoc\": \"\(answer.IDDoc!)\", \"IDLPAAudit\": \"\(answer.IDLPAAudit!)\", \"ImmediatelyCorrected\": \(answer.ImmediatelyCorrected!), \"Info1\": \"\(info1_string)\", \"NotOk\": \(answer.NotOk!), \"Ok\": \(answer.Ok!)}, \"Question\": {\"IDQuestion\": \"\(questID)\"}}]}"
                                 arrayString.append(str4)
                             }
@@ -385,7 +390,7 @@ class auditService {
                     _ = try! DB_CONNECTION.run(saveToDB.update(Audit_DB.Started <- startedDate))
                     
                     generetedJSON = self.convertToDictionary(text: str3)
-
+                    print(generetedJSON)
                     Alamofire.request("\(Config.DEFAULTS.string(forKey: "WS_URL")!)/LPAWebService/Web/SaveLPAAudit", method: .post, parameters: generetedJSON, encoding: JSONEncoding.default).responseJSON { response in
                         
                         guard let json = response.result.value as? [String: Any] else {

@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 
 protocol ModalDelegate {
     func updateImage(data: UIImage)
@@ -86,6 +87,16 @@ class ModalViewController: UIViewController, UIScrollViewDelegate, UIImagePicker
     }
     
     @IBAction func closeButtonPressed(_ sender: AnyObject) {
+        
+        let cameraMediaType = AVMediaTypeVideo
+        let cameraAuthorizationStatus = AVCaptureDevice.authorizationStatus(forMediaType: cameraMediaType)
+        
+        switch cameraAuthorizationStatus {
+        case .authorized: break
+        case .denied: image.image = nil
+        case .notDetermined: image.image = nil
+        default: image.image = nil
+        }
         
         if(isModalAnswerPhoto == true) {
             if let imageData = image.image {

@@ -2,6 +2,7 @@ import UIKit
 import Fabric
 import Crashlytics
 import UserNotifications
+import Photos
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {

@@ -57,9 +57,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidAppear(_ animated: Bool) {
         self.stopActivityIndicatory()
         view.endEditing(true)
-        self.username.text = ""
-        self.password.text = ""
-        self.rememberMe.setOn(false, animated: false)
+        
+        if(self.rememberMe.isOn != true){
+            self.password.text = ""
+            self.rememberMe.setOn(false, animated: false)
+        }
+        
+        if(Translator.checkIfKeyExist(key: "login_save_values") == true) {
+            if(Int(Config.DEFAULTS.string(forKey: "login_remember_me")!) == 1){
+                self.username.text = Config.DEFAULTS.string(forKey: "login_username")
+                self.password.text = Config.DEFAULTS.string(forKey: "login_password")
+                self.rememberMe.setOn(true, animated: false)
+            }else{
+                self.username.text = Config.DEFAULTS.string(forKey: "login_username")
+            }
+        }
         
         self.rememberMeLabel.text = Translator.getLangValue(key: "remember")
         self.loginButton.setTitle(Translator.getLangValue(key: "login"), for: .normal)
@@ -122,6 +134,18 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         self.removeAuditorsAndMachines()
                         Config.DEFAULTS.set(self.rememberMe.isOn, forKey: "remember_me")
                         Config.DEFAULTS.set("true", forKey: "firstLogin")
+                        
+                        if(self.rememberMe.isOn == true){
+                            Config.DEFAULTS.set("true", forKey: "login_save_values")
+                            Config.DEFAULTS.set(self.rememberMe.isOn, forKey:"login_remember_me")
+                            Config.DEFAULTS.set(self.username.text, forKey: "login_username")
+                            Config.DEFAULTS.set(self.password.text, forKey: "login_password")
+                        }else{
+                            Config.DEFAULTS.set(self.rememberMe.isOn, forKey:"login_remember_me")
+                            Config.DEFAULTS.set("true", forKey: "login_save_values")
+                            Config.DEFAULTS.set(self.username.text, forKey: "login_username")
+                        }
+                        
                         self.performSegue(withIdentifier: "AuditView", sender: nil)
 
                     }else{
