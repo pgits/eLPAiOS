@@ -13,6 +13,18 @@ class LocationModalViewController: UIViewController, UIScrollViewDelegate {
         view.isOpaque = false
 
         locationImage.image = imageFromController
+    
+        if(imageFromController == nil) {
+            let messageLabel = UILabel(frame: CGRect(x: self.view.center.x/1.5,y: self.view.center.y, width: view.bounds.size.width, height: view.bounds.size.height))
+            messageLabel.text = Translator.getLangValue(key: "photo_is_not_available")
+            messageLabel.textColor = UIColor.white
+            messageLabel.numberOfLines = 0;
+            messageLabel.textAlignment = .center;
+            messageLabel.font = UIFont(name: "TrebuchetMS", size: 15)
+            messageLabel.sizeToFit()
+
+            self.view.addSubview(messageLabel)
+        }
         
         self.imageScroll.delegate = self
         self.imageScroll.minimumZoomScale = 1.0

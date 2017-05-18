@@ -60,12 +60,17 @@ extension String
     func replaceBadCharacters() -> String
     {
         var replacedString = self
-        let characters = ["\"", "\\", "\n"]
+        let characters = ["\"", "\\"]
         let withString = ""
         for i in 0...characters.count-1 {
             replacedString = replacedString.replacingOccurrences(of: characters[i], with: withString, options: NSString.CompareOptions.literal, range: nil)
         }
         return replacedString.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    
+    func replaceNewLine() -> String
+    {
+        return self.replacingOccurrences(of:"/n", with: "//n")
     }
 }
 
@@ -140,3 +145,17 @@ extension JSON{
     }
 }
 
+extension UILabel {
+    func isTruncated() -> Bool {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: self.bounds.width, height: CGFloat.greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.font = self.font
+        label.text = self.text
+        label.sizeToFit()
+        if label.frame.height > self.frame.height {
+            return true
+        } else {
+            return false
+        }
+    }
+}

@@ -58,6 +58,7 @@ class NewSettingsViewController: UIViewController, UITableViewDelegate, UITextFi
         
         // TexField delegate
         serverURLfield.delegate = self
+        serverURLfield.tintColor = UIColor.white
         
         // only for ADIENT APP
         if(APP_FLAVOR.APP == "adient"){
@@ -380,6 +381,16 @@ class NewSettingsViewController: UIViewController, UITableViewDelegate, UITextFi
     }
     
     func saveButtonPressed() {
+        if(serverURLfield.text! != Translator.getLangValue(key: "profileWSURL")) {
+            self.languageSelect.removeAll()
+            Config.DEFAULTS.removeObject(forKey: "selectedLanguage")
+            Config.DEFAULTS.removeObject(forKey: "profileID")
+            self.languageID.removeAll()
+            self.languageName.text = ""
+            view.endEditing(true)
+            return
+        }
+        
         view.endEditing(true)
         
         WS.LOGIN_SERVICE.getProfiles() { (result, succeed) in

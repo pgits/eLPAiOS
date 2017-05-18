@@ -66,14 +66,14 @@ class ManagePageViewController: UIPageViewController {
                 if(isOK){
                     self.getQuestions(jsonDATA: jsonDATA, db: db)
                 }else{
-//                    self.navigationController?.navigationBar.removeGestureRecognizer(self.tapGestureRecognizer)
+                self.navigationController?.navigationBar.removeGestureRecognizer(self.tapGestureRecognizer)
                     self.showAlertServerError()
                     return
                 }
             }
         }
         // loading
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             db.busyTimeout = 5
             do{
                 for questionArray in try db.prepare(Question_DB.TABLE) {
@@ -260,8 +260,9 @@ class ManagePageViewController: UIPageViewController {
         navigationController?.setNavigationBarHidden(false, animated:true)
 //        let newBackButton:UIButton = UIButton(type: UIButtonType.custom) as UIButton
         newBackButton.addTarget(self, action: #selector(backToAuditList), for: UIControlEvents.touchUpInside)
-        newBackButton.setTitle("< " + Translator.getLangValue(key: "back"), for: UIControlState.normal)
-        newBackButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+//        newBackButton.setTitle("< " + Translator.getLangValue(key: "back"), for: UIControlState.normal)
+//        newBackButton.setTitleColor(UIColor.white, for: UIControlState.normal)
+        newBackButton.setImage(UIImage(named: "Cancel 2_64px"), for: UIControlState.normal)
         newBackButton.sizeToFit()
         let myCustomBackButtonItem:UIBarButtonItem = UIBarButtonItem(customView: newBackButton)
         self.navigationItem.leftBarButtonItem  = myCustomBackButtonItem
@@ -690,7 +691,7 @@ class ManagePageViewController: UIPageViewController {
     func addFirstQuestionButton() {
         let button = UIButton(type: .system) // let preferred over var here
         button.frame = CGRect(x: NavigationHelper.firstQuestionX(), y: NavigationHelper.firstQuestionY(), width: NavigationHelper.firstQuestionW(), height: NavigationHelper.firstQuestionH())
-        button.setTitle("|<", for: UIControlState.normal)
+        button.setImage(UIImage(named: "angle_line_left_32px"), for: UIControlState.normal)
         button.tintColor = UIColor.white
         button.titleLabel?.font = UIFont(name: "Helvetica", size: 27)
         button.addTarget(self, action: #selector(firstQuestionButton), for: UIControlEvents.touchUpInside)
@@ -700,7 +701,7 @@ class ManagePageViewController: UIPageViewController {
     func addPreviousQuestionButton() {
         let button = UIButton(type: .system) // let preferred over var here
         button.frame = CGRect(x: NavigationHelper.previousQuestionX(), y: NavigationHelper.previousQuestionY(), width: NavigationHelper.previousQuestionW(), height: NavigationHelper.previousQuestionH())
-        button.setTitle("<", for: UIControlState.normal)
+        button.setImage(UIImage(named: "angle_left_32px"), for: UIControlState.normal)
         button.tintColor = UIColor.white
         button.titleLabel?.font = UIFont(name: "Helvetica", size: 27)
         button.addTarget(self, action: #selector(previousQuestionButton), for: UIControlEvents.touchUpInside)
@@ -710,7 +711,7 @@ class ManagePageViewController: UIPageViewController {
     func addNextQuestionButton() {
         let button = UIButton(type: .system) // let preferred over var here
         button.frame = CGRect(x: NavigationHelper.nextQuestionX(), y: NavigationHelper.nextQuestionY(), width: NavigationHelper.nextQuestionW(), height: NavigationHelper.nextQuestionH())
-        button.setTitle(">", for: UIControlState.normal)
+        button.setImage(UIImage(named: "angle_right_32px"), for: UIControlState.normal)
         button.tintColor = UIColor.white
         button.titleLabel?.font = UIFont(name: "Helvetica", size: 27)
         button.addTarget(self, action: #selector(nextQuestionButton), for: UIControlEvents.touchUpInside)
@@ -720,7 +721,7 @@ class ManagePageViewController: UIPageViewController {
     func addLastQuestionButton() {
         let button = UIButton(type: .system) // let preferred over var here
         button.frame = CGRect(x: NavigationHelper.lastQuestionX(), y: NavigationHelper.lastQuestionY(), width: NavigationHelper.lastQuestionW(), height: NavigationHelper.lastQuestionH())
-        button.setTitle(">|", for: UIControlState.normal)
+        button.setImage(UIImage(named: "angle_line_right_32px"), for: UIControlState.normal)
         button.tintColor = UIColor.white
         button.titleLabel?.font = UIFont(name: "Helvetica", size: 27)
         button.addTarget(self, action: #selector(lastQuestionButton), for: UIControlEvents.touchUpInside)

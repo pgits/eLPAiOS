@@ -99,13 +99,21 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                     if (Reachability.isConnectedToNetwork() == true) {
                         performSegue(withIdentifier: "openAudit", sender: nil)
                     }else{
-                        if let _ = try! db.pluck(Answer_DB.TABLE.filter(Answer_DB.IDLPAAudit == auditID)) {
-                            performSegue(withIdentifier: "openAudit", sender: nil)
-                        }else{
-                            let alert = UIAlertController(title: "Error!", message: "No internet connection!", preferredStyle: UIAlertControllerStyle.alert)
-                        
+                        do {
+                            if let _ = try db.pluck(Answer_DB.TABLE.filter(Answer_DB.IDLPAAudit == auditID)) {
+                                performSegue(withIdentifier: "openAudit", sender: nil)
+                            }else{
+                                let alert = UIAlertController(title: Translator.getLangValue(key: "error"), message: Translator.getLangValue(key: "no_internet_connection"), preferredStyle: UIAlertControllerStyle.alert)
+                                
+                                alert.addAction(UIAlertAction(title: Translator.getLangValue(key: "cancel"), style: UIAlertActionStyle.default, handler: nil))
+                                
+                                UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
+                            }
+                        }catch {
+                            let alert = UIAlertController(title: Translator.getLangValue(key: "error"), message: Translator.getLangValue(key: "no_internet_connection"), preferredStyle: UIAlertControllerStyle.alert)
+                            
                             alert.addAction(UIAlertAction(title: Translator.getLangValue(key: "cancel"), style: UIAlertActionStyle.default, handler: nil))
-                        
+                            
                             UIApplication.shared.keyWindow?.rootViewController?.present(alert, animated: true, completion: nil)
                         }
                     }
@@ -122,10 +130,12 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                 if (Reachability.isConnectedToNetwork() == true) {
                     performSegue(withIdentifier: "openAudit", sender: nil)
                 }else{
-                    if let _ = try! db.pluck(Answer_DB.TABLE.filter(Answer_DB.IDLPAAudit == auditID)) {
-                        performSegue(withIdentifier: "openAudit", sender: nil)
-                    }else{
-                        let alert = UIAlertController(title: "Error!", message: "No internet connection!", preferredStyle: UIAlertControllerStyle.alert)
+                    do {
+                        if let _ = try db.pluck(Answer_DB.TABLE.filter(Answer_DB.IDLPAAudit == auditID)) {
+                            performSegue(withIdentifier: "openAudit", sender: nil)
+                        }
+                    }catch{
+                        let alert = UIAlertController(title: Translator.getLangValue(key: "error"), message: Translator.getLangValue(key: "no_internet_connection"), preferredStyle: UIAlertControllerStyle.alert)
                         
                         alert.addAction(UIAlertAction(title: Translator.getLangValue(key: "cancel"), style: UIAlertActionStyle.default, handler: nil))
                         
