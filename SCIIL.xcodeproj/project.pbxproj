@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		472B4AEA1ECE1867006B6F1C /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 472B4AE81ECE1867006B6F1C /* Fabric.framework */; };
+		472B4AEB1ECE1867006B6F1C /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 472B4AE91ECE1867006B6F1C /* Crashlytics.framework */; };
+		472B4AF01ECE222A006B6F1C /* Answers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 472B4AEF1ECE222A006B6F1C /* Answers.framework */; };
 		D51F1AED1E4488EB00F34B01 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51F1AEC1E4488EB00F34B01 /* Reachability.swift */; };
 		D528F3BC1DFAB589001FC21A /* Chapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D528F3BB1DFAB589001FC21A /* Chapter.swift */; };
 		D528F3C01DFAB5F2001FC21A /* Answer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D528F3BF1DFAB5F2001FC21A /* Answer.swift */; };
@@ -243,6 +246,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		472B4AE81ECE1867006B6F1C /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
+		472B4AE91ECE1867006B6F1C /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		472B4AED1ECE219C006B6F1C /* com.twitter.answers.ios-manual.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = "com.twitter.answers.ios-manual.zip"; path = "../../../../Downloads/com.twitter.answers.ios-manual.zip"; sourceTree = "<group>"; };
+		472B4AEF1ECE222A006B6F1C /* Answers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Answers.framework; sourceTree = "<group>"; };
 		D51F1AEC1E4488EB00F34B01 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		D528F3BB1DFAB589001FC21A /* Chapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chapter.swift; sourceTree = "<group>"; };
 		D528F3BF1DFAB5F2001FC21A /* Answer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Answer.swift; sourceTree = "<group>"; };
@@ -283,8 +290,6 @@
 		D5AFAE711E44D3CC00970287 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		D5AFAE731E4868C300970287 /* langService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = langService.swift; sourceTree = "<group>"; };
 		D5AFAE751E48B26300970287 /* Buttons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Buttons.swift; sourceTree = "<group>"; };
-		D5AFAE851E49F47300970287 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
-		D5AFAE861E49F47300970287 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		D5BBB8681E9FA3A60095C807 /* NewSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewSettingsViewController.swift; sourceTree = "<group>"; };
 		D5D9FBDD1E0A7DA60097B11C /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		D5D9FBF31E0BC1460097B11C /* ModalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalViewController.swift; sourceTree = "<group>"; };
@@ -306,14 +311,25 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				472B4AF01ECE222A006B6F1C /* Answers.framework in Frameworks */,
 				D5F3EE921DF55DFA001A232A /* SwiftyJSON.framework in Frameworks */,
 				D54B4C2A1DE8959900C8FF58 /* Alamofire.framework in Frameworks */,
+				472B4AEB1ECE1867006B6F1C /* Crashlytics.framework in Frameworks */,
+				472B4AEA1ECE1867006B6F1C /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		472B4AEC1ECE219C006B6F1C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				472B4AED1ECE219C006B6F1C /* com.twitter.answers.ios-manual.zip */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D528F3A51DFAB548001FC21A /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -449,11 +465,13 @@
 			children = (
 				D5F495D61DB8DA690039D73E /* SCIIL */,
 				D5F495D51DB8DA690039D73E /* Products */,
-				D5AFAE851E49F47300970287 /* Fabric.framework */,
-				D5AFAE861E49F47300970287 /* Crashlytics.framework */,
+				472B4AEF1ECE222A006B6F1C /* Answers.framework */,
+				472B4AE81ECE1867006B6F1C /* Fabric.framework */,
+				472B4AE91ECE1867006B6F1C /* Crashlytics.framework */,
 				D5F3EE791DF55BA2001A232A /* SwiftyJSON.xcodeproj */,
 				D54B4C4C1DEC647300C8FF58 /* SQLite.xcodeproj */,
 				D54B4C111DE8952B00C8FF58 /* Alamofire.xcodeproj */,
+				472B4AEC1ECE219C006B6F1C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -751,7 +769,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = "./Fabric.framework/run e634abf0fdd7f9b2bd8272af1ce0abb0a468ae02 a057fa38bccd70b35ba7fc0a0698647245ba4fb8736659fb39efa42170e519f7";
 		};
 /* End PBXShellScriptBuildPhase section */
 

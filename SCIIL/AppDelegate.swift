@@ -3,6 +3,7 @@ import Fabric
 import Crashlytics
 import UserNotifications
 import Photos
+import Answers
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -23,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.window?.rootViewController = storyboard.instantiateInitialViewController()
         self.window?.makeKeyAndVisible()
 
-//        Fabric.with([Crashlytics.self])
+        Fabric.with([Crashlytics.self])
         removeOldImages()
         
         application.registerUserNotificationSettings(
@@ -44,7 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             // Fallback on earlier versions
         }
-
         
         return true
     }
@@ -136,5 +136,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             print("Could not clear temp folder: \(error)")
         }
     }
+
 }
 

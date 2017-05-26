@@ -3,6 +3,9 @@ import UIKit
 import Alamofire
 import SQLite
 import UserNotifications
+import Crashlytics
+import Fabric
+import Answers
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
 
@@ -129,6 +132,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 documentationLink = profile[PROFILE_DB.DocumentationLink]
                 Config.DEFAULTS.set(profile[PROFILE_DB.WebServiceLink], forKey: "WS_URL")
                 self.showActivityIndicatory(uiView: self.view)
+                if let myLoginName = username.text {
+                    Answers.logCustomEvent(withName: "login UserName", customAttributes: ["username":myLoginName])
+                }
+                Answers.logCustomEvent(withName: "profile ", customAttributes: ["dashboardLink":dashboardLink])
+                
                 WS.LOGIN_SERVICE.doLogin(username: username.text!, password: password.text!, module: moduleID, dashboardLink: dashboardLink, documentationLink: documentationLink) { (ResultCode :Int, errorMessage :String) in
                     if(ResultCode == 0){
                         self.removeAuditorsAndMachines()
@@ -154,7 +162,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         let okAction = UIAlertAction(title: Translator.getLangValue(key: "ok"), style: .default, handler: nil)
                     
                         alertController.addAction(okAction)
-                    
+                        if let myLoginName = self.username.text {
+                            Answers.logCustomEvent(withName: "login Failed", customAttributes: ["username":myLoginName])
+                        }
+
                         self.present(alertController, animated: true, completion: nil)
                     }
                     if(ResultCode == 15) {
@@ -247,4 +258,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         backItem.title = Translator.getLangValue(key: "back")
         navigationItem.backBarButtonItem = backItem // This will show in the next view controller being pushed
     }
+    func anImportantUserAction(title:String, key:String, value:String) {
+        
+        // TODO: Move this method and customize the name and parameters to track your key metrics
+        //       Use your own string attributes to track common values over time
+        //       Use your own number attributes to track median value over time
+        Answers.logCustomEvent(withName: title, customAttributes: [key:value])
+    }
+
 }
