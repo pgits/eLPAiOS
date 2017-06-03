@@ -1,15 +1,19 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "040C2A24A66BDB028FB37E5276BA7C6364029BB8",
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "4D6B63C77AE1630328F279BF84B3E66B78A34CF1",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "4D6B63C77AE1630328F279BF84B3E66B78A34CF1" : 9223372036854775807,
     "040C2A24A66BDB028FB37E5276BA7C6364029BB8" : 9223372036854775807,
+    "DAAD1438FF14AC0698733962441F7BEE2C91E10D" : 9223372036854775807,
     "67620B5EFA902936DF04070AF595B76AB0333747" : 9223372036854775807
   },
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "D2CE6D35-785F-49FE-8906-3B87FC3F57F1",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "4D6B63C77AE1630328F279BF84B3E66B78A34CF1" : "ios-elpa-adient\/",
     "040C2A24A66BDB028FB37E5276BA7C6364029BB8" : "SCIIL\/",
+    "DAAD1438FF14AC0698733962441F7BEE2C91E10D" : "..\/..\/adient\/sap",
     "67620B5EFA902936DF04070AF595B76AB0333747" : "SCIIL\/Alamofire\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "SCIIL",
@@ -22,9 +26,19 @@
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "040C2A24A66BDB028FB37E5276BA7C6364029BB8"
     },
     {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/pgits\/eLPAiOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4D6B63C77AE1630328F279BF84B3E66B78A34CF1"
+    },
+    {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/Alamofire\/Alamofire.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "67620B5EFA902936DF04070AF595B76AB0333747"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/pgits\/SAPcontainer",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DAAD1438FF14AC0698733962441F7BEE2C91E10D"
     }
   ]
 }
