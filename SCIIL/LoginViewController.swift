@@ -85,7 +85,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 self.performSegue(withIdentifier: "AuditView", sender: nil)
             }
         }
-        //setupSiren()
+        setupSiren()
 
     }
     
