@@ -571,6 +571,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 0;
 							};
+							com.apple.DataProtection = {
+								enabled = 0;
+							};
 							com.apple.Push = {
 								enabled = 1;
 							};
