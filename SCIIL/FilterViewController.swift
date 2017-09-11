@@ -2,7 +2,7 @@ import UIKit
 import SQLite
 
 class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
-
+    
     @IBOutlet var pickerTextField: UITextField!
     @IBOutlet var workstationTextField: UITextField!
     @IBOutlet var dateFromTextField: UITextField!
@@ -59,13 +59,13 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
         let db = try! Connection("\(Config.PATH)/\(Config.DB_FILE)")
         if let logins = try! db.pluck(Login_DB.TABLE) {
             WS.AUDITORS_SERVICE.getAuditors(IDSession: logins[Login_DB.IDSession], IDModule: logins[Login_DB.IDModule], LgeID: logins[Login_DB.IDLge], UserIDS: logins[Login_DB.IDUser])
-        
+            
             WS.WORKSTATION_SERVICE.getWorkstations(IDSession: logins[Login_DB.IDSession], IDModule: logins[Login_DB.IDModule], LgeID: logins[Login_DB.IDLge], UserIDS: logins[Login_DB.IDUser])
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.assignUsersArray()
-
+            
             if(Translator.checkIfKeyExist(key: "user_filter") == false) {
                 let defaultProfileIndex = self.usersSelect.index(of: Config.DEFAULTS.string(forKey: "username")!)
                 if(defaultProfileIndex != nil) {
@@ -219,8 +219,8 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
     }
     func assignUsersArray(){
         let path = NSSearchPathForDirectoriesInDomains(
-                    .documentDirectory, .userDomainMask, true
-                    ).first!
+            .documentDirectory, .userDomainMask, true
+            ).first!
         
         let db = try! Connection("\(path)/\(Config.DB_FILE)")
         let auditorsList = Table("auditorsList")
@@ -323,7 +323,7 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
                 _ = self.navigationController?.popViewController(animated: true)
             }
         }
-
+        
     }
     
     func dissmisToolBarUser() {
@@ -383,15 +383,15 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
         container.removeFromSuperview()
     }
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
 
 
