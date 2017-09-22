@@ -46,7 +46,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         self.addNavigationButtons()
         
-//        self.title = Translator.getLangValue(key: "title_activity_audit_list")
+        //        self.title = Translator.getLangValue(key: "title_activity_audit_list")
         self.title = ""
     }
     
@@ -263,10 +263,17 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         return dateFormatter.string(from: date)
     }
     
+    func changeDateFormatForPlanned(date :Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "d.M.yyyy"
+        dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+        return dateFormatter.string(from: date)
+    }
+    
     // MARK: Get audit lists
     func getUsers(){
         let db = try! Connection("\(Config.PATH)/\(Config.DB_FILE)")
-
+        
         usersList.removeAll()
         workstation.removeAll()
         planned.removeAll()
@@ -292,15 +299,15 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                 usersList.append(audits[Audit_DB.UserID])
                 usersStartedList.append(audits[Audit_DB.Started_UserID])
                 workstation.append(audits[Audit_DB.MachineID])
-
+                
                 let plannedTime = NSDate(timeIntervalSince1970:  TimeInterval(audits[Audit_DB.Planned])! / 1000)
-                let convertedDate = changeDateFormat(date: plannedTime as Date)
+                let convertedDate = changeDateFormatForPlanned(date: plannedTime as Date)
                 
                 planned.append(convertedDate)
                 auditIDarray.append(audits[Audit_DB.IDLPAAudit])
                 auditUserID.append(audits[Audit_DB.IDUser])
                 auditStartedUserID.append(audits[Audit_DB.Started_IDUser])
-
+                
                 if(audits[Audit_DB.Syncing] == true){
                     status.append(STATUS.NOT_SYNCED)
                     statusText.append(Translator.notSynced())
@@ -327,12 +334,12 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                 }
             }
         }catch{
-
+            
         }
     }
     
     func getAudits() {
-
+        
         let db = try! Connection("\(Config.PATH)/\(Config.DB_FILE)")
         let login = Table("login")
         let audit = Table("audit")
@@ -363,7 +370,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         if let logins = try! db.pluck(login) {
             WS.AUDIT_SERVICE.getAuditsList(Session: logins[IDSession], Module: logins[IDModule], Lge: logins[IDLge], User: logins[IDUser], UserAuditor: logins[IDUser], Machine: "", DateFrom: String(DateFrom), DateTo: String(DateTo))
         }
-
+        
     }
     
     // MARK: - viewWillAppear
@@ -388,7 +395,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             self.getUsers()
             self.tableView.reloadData()
         }
-    
+        
         self.setImageSize()
         self.addNavigationButtons()
     }
@@ -454,7 +461,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             backItem.title = Translator.getLangValue(key: "back")
             navigationItem.backBarButtonItem = backItem // This will show in the next view controller being pushed
         }
-
+        
     }
     // MARK: - Activity Indicator
     func showActivityIndicatory(uiView: UIView) {
