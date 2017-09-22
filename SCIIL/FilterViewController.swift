@@ -1,8 +1,16 @@
+//
+//  FilterViewController.swift
+//  SCIIL
+//
+//  Created by Eugenijus Denisov on 09/11/16.
+//  Copyright © 2016 Eugenijus Denisov. All rights reserved.
+//
+
 import UIKit
 import SQLite
 
 class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
-    
+
     @IBOutlet var pickerTextField: UITextField!
     @IBOutlet var workstationTextField: UITextField!
     @IBOutlet var dateFromTextField: UITextField!
@@ -35,7 +43,7 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
             self.showAlertInternetError()
         }
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-        
+        datePickerFrom.timeZone = NSTimeZone(name: "UTC")! as TimeZone
         userLabel.text = Translator.getLangValue(key: "user")
         workstationLabel.text = Translator.getLangValue(key: "machine")
         fromLabel.text = Translator.getLangValue(key: "from")
@@ -59,13 +67,13 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
         let db = try! Connection("\(Config.PATH)/\(Config.DB_FILE)")
         if let logins = try! db.pluck(Login_DB.TABLE) {
             WS.AUDITORS_SERVICE.getAuditors(IDSession: logins[Login_DB.IDSession], IDModule: logins[Login_DB.IDModule], LgeID: logins[Login_DB.IDLge], UserIDS: logins[Login_DB.IDUser])
-            
+        
             WS.WORKSTATION_SERVICE.getWorkstations(IDSession: logins[Login_DB.IDSession], IDModule: logins[Login_DB.IDModule], LgeID: logins[Login_DB.IDLge], UserIDS: logins[Login_DB.IDUser])
         }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.assignUsersArray()
-            
+
             if(Translator.checkIfKeyExist(key: "user_filter") == false) {
                 let defaultProfileIndex = self.usersSelect.index(of: Config.DEFAULTS.string(forKey: "username")!)
                 if(defaultProfileIndex != nil) {
@@ -84,14 +92,28 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
     
     func addDefaultDates() {
         // Do any additional setup after loading the view.
-        dateFromTextField.text = changeDateFormat(date: Date())
-        let dateFromTimestamp = Int64(Date().startOfDay.timeIntervalSince1970 * 1000.0)
+        let datestart:Date
+        if((TimeZone.current.abbreviation()?.range(of: "-")) != nil) {
+            datestart = Date().startOfDay
+        }else{
+            datestart = Date().endOfDay!
+        }
+
+        dateFromTextField.text = changeDateFormat(date: datestart)
+        
+        var calendar = NSCalendar.current
+        calendar.timeZone = NSTimeZone(abbreviation: "UTC")! as TimeZone
+        let correctDate = calendar.startOfDay(for: datestart)
+        datePickerFrom.date = correctDate
+        print(correctDate)
+        let dateFromTimestamp = Int64(correctDate.timeIntervalSince1970 * 1000.0)
         dateFromTimeStamp = dateFromTimestamp
         
         var addDaysComponent = DateComponents()
         addDaysComponent.day = 7
-        let addDay = Calendar.current.date(byAdding: addDaysComponent, to: Date())
+        let addDay = Calendar.current.date(byAdding: addDaysComponent, to: datestart)
         dateToTextField.text = changeDateFormat(date: addDay!)
+        datePickerTo.date = addDay!
         let dateToTimestamp = Int64((addDay?.timeIntervalSince1970)! * 1000.0)
         dateToTimeStamp = dateToTimestamp
     }
@@ -194,33 +216,36 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
     
     func fromDatePickerValueChanged(sender:UIDatePicker) {
         let dateFormatter = DateFormatter()
-        //dateFormatter.dateStyle = DateFormatter.Style.short
         dateFormatter.dateFormat = "d.M.yyyy"
-        //dateFormatter.timeStyle = DateFormatter.Style.none
+        dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
         dateFromTextField.text = dateFormatter.string(from: sender.date)
-        let timestamp = Int64(sender.date.startOfDay.timeIntervalSince1970 * 1000.0)
+        
+        var calendar = NSCalendar.current
+        calendar.timeZone = NSTimeZone(abbreviation: "UTC")! as TimeZone
+        let correctDate = calendar.startOfDay(for: sender.date)
+//        datePickerFrom.date = correctDate
+        let timestamp = Int64(correctDate.timeIntervalSince1970 * 1000.0)
+        print(timestamp)
         dateFromTimeStamp = timestamp
     }
     func toDatePickerValueChanged(sender:UIDatePicker) {
         let dateFormatter = DateFormatter()
-        //dateFormatter.dateStyle = DateFormatter.Style.short
         dateFormatter.dateFormat = "d.M.yyyy"
-        //dateFormatter.timeStyle = DateFormatter.Style.none
         dateToTextField.text = dateFormatter.string(from: sender.date)
         let timestamp = Int64(sender.date.timeIntervalSince1970 * 1000.0)
         dateToTimeStamp = timestamp
     }
     func changeDateFormat(date :Date) -> String {
         let dateFormatter = DateFormatter()
-        //dateFormatter.dateStyle = DateFormatter.Style.short
         dateFormatter.dateFormat = "d.M.yyyy"
-        
+        dateFormatter.timeZone = NSTimeZone(name: "UTC")! as TimeZone
+
         return dateFormatter.string(from: date)
     }
     func assignUsersArray(){
         let path = NSSearchPathForDirectoriesInDomains(
-            .documentDirectory, .userDomainMask, true
-            ).first!
+                    .documentDirectory, .userDomainMask, true
+                    ).first!
         
         let db = try! Connection("\(path)/\(Config.DB_FILE)")
         let auditorsList = Table("auditorsList")
@@ -252,8 +277,12 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
         if(Translator.checkIfKeyExist(key: "dateFromTimeStamp")) {
             let savedTimeStamp = Config.DEFAULTS.string(forKey: "dateFromTimeStamp")
             let plannedTime = NSDate(timeIntervalSince1970:  TimeInterval(savedTimeStamp!)! / 1000)
-            datePickerFrom.date = plannedTime as Date
-            dateFromTextField.text = changeDateFormat(date: datePickerFrom.date.startOfDay)
+            var calendar = NSCalendar.current
+            calendar.timeZone = NSTimeZone(abbreviation: "UTC")! as TimeZone
+            let correctDate = calendar.startOfDay(for: plannedTime as Date)
+
+            datePickerFrom.date = correctDate as Date
+            dateFromTextField.text = changeDateFormat(date: correctDate)
             dateFromTimeStamp = Int64(savedTimeStamp!)!
         }
         
@@ -323,7 +352,7 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
                 _ = self.navigationController?.popViewController(animated: true)
             }
         }
-        
+
     }
     
     func dissmisToolBarUser() {
@@ -383,15 +412,15 @@ class FilterViewController: UIViewController, UIPickerViewDataSource, UIPickerVi
         container.removeFromSuperview()
     }
     /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
 }
 
 

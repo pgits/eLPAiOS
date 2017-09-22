@@ -1,3 +1,11 @@
+//
+//  AuditViewController.swift
+//  SCIIL
+//
+//  Created by Eugenijus Denisov on 03/11/16.
+//  Copyright © 2016 Eugenijus Denisov. All rights reserved.
+//
+
 import UIKit
 import SQLite
 import Crashlytics
@@ -46,7 +54,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         self.addNavigationButtons()
         
-        //        self.title = Translator.getLangValue(key: "title_activity_audit_list")
+//        self.title = Translator.getLangValue(key: "title_activity_audit_list")
         self.title = ""
     }
     
@@ -273,7 +281,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     // MARK: Get audit lists
     func getUsers(){
         let db = try! Connection("\(Config.PATH)/\(Config.DB_FILE)")
-        
+
         usersList.removeAll()
         workstation.removeAll()
         planned.removeAll()
@@ -299,22 +307,37 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                 usersList.append(audits[Audit_DB.UserID])
                 usersStartedList.append(audits[Audit_DB.Started_UserID])
                 workstation.append(audits[Audit_DB.MachineID])
+
+                var plannedTime = NSDate(timeIntervalSince1970:  TimeInterval(audits[Audit_DB.Planned])! / 1000)
                 
-                let plannedTime = NSDate(timeIntervalSince1970:  TimeInterval(audits[Audit_DB.Planned])! / 1000)
+                var calendar = NSCalendar.current
+                calendar.timeZone = NSTimeZone(abbreviation: "UTC")! as TimeZone
+                let correctDate = calendar.startOfDay(for: plannedTime as Date)
+                let datestart:Date
+                if((TimeZone.current.abbreviation()?.range(of: "-")) != nil) {
+                    datestart = Date().startOfDay
+                }else{
+                    datestart = Date().endOfDay!
+                }
+                
+                let thisDate = calendar.startOfDay(for: datestart)
+                plannedTime = correctDate as NSDate
+                
                 let convertedDate = changeDateFormatForPlanned(date: plannedTime as Date)
+//                let convertedDate = changeDateFormat(date: plannedTime as Date)
                 
                 planned.append(convertedDate)
                 auditIDarray.append(audits[Audit_DB.IDLPAAudit])
                 auditUserID.append(audits[Audit_DB.IDUser])
                 auditStartedUserID.append(audits[Audit_DB.Started_IDUser])
-                
+
                 if(audits[Audit_DB.Syncing] == true){
                     status.append(STATUS.NOT_SYNCED)
                     statusText.append(Translator.notSynced())
                 }else{
                     // started
                     if(audits[Audit_DB.Started] != "null") {
-                        if (plannedTime as Date >= Date().startOfDay){
+                        if (plannedTime as Date >= thisDate){
                             status.append(STATUS.STARTED)
                             statusText.append(Translator.started())
                         }else{
@@ -323,7 +346,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                         }
                         //not started
                     }else{
-                        if (plannedTime as Date >= Date().startOfDay){
+                        if (plannedTime as Date >= thisDate){
                             status.append(STATUS.PLANNED)
                             statusText.append(Translator.planned())
                         }else{
@@ -334,12 +357,12 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
                 }
             }
         }catch{
-            
+
         }
     }
     
     func getAudits() {
-        
+
         let db = try! Connection("\(Config.PATH)/\(Config.DB_FILE)")
         let login = Table("login")
         let audit = Table("audit")
@@ -359,18 +382,29 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         let IDModule = Expression<String>("IDModule")
         let IDLge = Expression<Int>("IDLge")
         let IDUser = Expression<String>("IDUser")
-        
-        let DateFrom = Int64(Date().startOfDay.timeIntervalSince1970 * 1000.0)
+        let datestart:Date
+        if((TimeZone.current.abbreviation()?.range(of: "-")) != nil) {
+            datestart = Date().startOfDay
+        }else{
+            datestart = Date().endOfDay!
+        }
+
+        var calendar = NSCalendar.current
+        calendar.timeZone = NSTimeZone(abbreviation: "UTC")! as TimeZone
+        let correctDate = calendar.startOfDay(for: datestart)
+        print(NSDate())
+        print(correctDate)
+        let DateFrom = Int64(correctDate.timeIntervalSince1970 * 1000.0)
         
         var addDaysComponent = DateComponents()
         addDaysComponent.day = 7
-        let addDay = Calendar.current.date(byAdding: addDaysComponent, to: Date())
+        let addDay = Calendar.current.date(byAdding: addDaysComponent, to: datestart)
         let DateTo = Int64((addDay?.timeIntervalSince1970)! * 1000.0)
         
         if let logins = try! db.pluck(login) {
             WS.AUDIT_SERVICE.getAuditsList(Session: logins[IDSession], Module: logins[IDModule], Lge: logins[IDLge], User: logins[IDUser], UserAuditor: logins[IDUser], Machine: "", DateFrom: String(DateFrom), DateTo: String(DateTo))
         }
-        
+
     }
     
     // MARK: - viewWillAppear
@@ -395,7 +429,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             self.getUsers()
             self.tableView.reloadData()
         }
-        
+    
         self.setImageSize()
         self.addNavigationButtons()
     }
@@ -461,7 +495,7 @@ class AuditViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             backItem.title = Translator.getLangValue(key: "back")
             navigationItem.backBarButtonItem = backItem // This will show in the next view controller being pushed
         }
-        
+
     }
     // MARK: - Activity Indicator
     func showActivityIndicatory(uiView: UIView) {
